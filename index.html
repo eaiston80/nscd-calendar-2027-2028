@@ -22,7 +22,7 @@
     --faculty:#C2B59B;      /* faculty-only days */
     --firstlast:#AE9C5A;    /* first / last / semester */
     --early:#5C378F;        /* early / noon dismissal */
-    --event:#178ACB;        /* other events (dot) */
+    --event:#178ACB;        /* other events (bold colored number) */
     --hatch:#8a8f8c;
   }
   *{box-sizing:border-box}
@@ -79,8 +79,8 @@
   .day.firstlast{border-color:var(--firstlast)}
   .day.early{border-color:var(--early);border-style:dashed}
   .day.firstlast.early{border-color:var(--firstlast);box-shadow:inset 0 0 0 2px var(--early)}
-  .day.event::after{content:"";position:absolute;left:50%;bottom:1px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--event)}
-  .day.noschool.event::after,.day.noschool-div.event::after{background:var(--ink)}
+  .day.event{color:var(--event);font-weight:800}
+  .day.faculty.event,.day.noschool-div.event{color:#fff}
   .day.dim{opacity:1}
 
   .lower{display:grid;grid-template-columns:1.25fr 1fr;gap:16px;margin-top:18px}
@@ -102,7 +102,7 @@
   .sw.firstlast{border-color:var(--firstlast)}
   .sw.early{border-color:var(--early);border-style:dashed}
   .sw.event{border-color:#cfd3d1}
-  .sw.event::after{content:"";position:absolute;left:50%;bottom:1px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--event)}
+  .sw.event::after{content:"9";position:absolute;inset:0;display:grid;place-items:center;font-size:11px;font-weight:800;line-height:1;color:var(--event)}
   .foot{margin-top:14px;font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
   /* tooltip */
@@ -147,7 +147,7 @@
     #printview .month h2{font-size:9px;padding:3px}
     #printview .dow{font-size:7.5px;padding:1px 0}
     #printview .day{font-size:8.5px;height:15px;line-height:11px;border-width:1.5px;margin:.5px}
-    #printview .day.event::after{width:3px;height:3px;margin-left:-1.5px;bottom:0}
+    #printview .sw.event::after{font-size:8px}
     #printview .lower{grid-template-columns:1.25fr 1fr;gap:8px;margin-top:9px}
     #printview .col-stack{gap:8px}
     #printview .box h3{font-size:8.5px;padding:2px}
@@ -233,16 +233,6 @@
     <nav aria-label="Jump to a month">
       <ul class="skip" id="accNav"></ul>
     </nav>
-    <h2 class="first" id="acc-legend">How dates are marked on the printed calendar</h2>
-    <ul>
-      <li>Coral (orange-red) filled date: No school for all divisions.</li>
-      <li>Teal (sea-green) filled date: No school for one division only (the division is named).</li>
-      <li>Gold-outlined date: First day of school, last day of school, or end of semester.</li>
-      <li>Purple dashed-outline date: Early or noon dismissal.</li>
-      <li>Tan-filled date: Faculty-only day; no students.</li>
-      <li>Gray-striped date: School offices closed (summer).</li>
-      <li>Small dot under a date: Other event, such as conferences, Go to School Night, or Homecoming.</li>
-    </ul>
     <div id="accMonths"></div>
     <h2 id="acc-noschool">All No School Days</h2>
     <ul id="accNoSchool"></ul>
@@ -376,7 +366,7 @@ function renderPrint(){
 
   const vis = EVENTS.filter(visible);
   const row = ev => `<tr><td class="d">${rangeShort(ev)}</td><td><span class="dv">${esc(divLabel(ev))}:</span> ${esc(ev.t.replace(/^No School - /,""))}</td></tr>`;
-  document.getElementById("tblImportant").innerHTML = vis.filter(e=>e.imp).map(row).join("");
+  document.getElementById("tblImportant").innerHTML = vis.filter(e=>!NOSCHOOL_CATS.includes(e.cat)).map(row).join("");
   document.getElementById("tblNoSchool").innerHTML = vis.filter(e=>NOSCHOOL_CATS.includes(e.cat)).map(row).join("");
   document.getElementById("pvSub").textContent = division==="ALL" ? "All divisions · Lower, Middle & Upper School" : DIVNAME[division]+" view";
 }
